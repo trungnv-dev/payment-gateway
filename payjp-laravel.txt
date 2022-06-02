@@ -1,0 +1,57 @@
+1. Mô tả:
+- Liên kết ứng dụng của mình với ứng dụng thanh toán payjp (cái này có package rồi nên composer required về xài thôi, ko cần viết API chi tiết)
+- Gọi API để thanh toán, tạo card, tạo customer
+- Lưu lại kết quả xử lý vào database
+
+2. Khái quát luồng xử lý:
+- Cần đăng kí 1 tài khoản để liên kết vs payjp
+- Sau khi đăng kí xong, vào https://pay.jp/d/settings để lấy secret_key và public_key
+- public_key sử dụng cho js, còn secret sử dụng khi gọi api
+
+3. Các bước thực hiện với laravel
+3.1 Cấu hình & setup
+- composer require payjp/payjp-php
+- update .env
+  PAYJP_PUBLIC_KEY=pk_XXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+  PAYJP_SECRET_KEY=sk_XXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+- Tạo file config/payjp.php để save pk và sk
+- Thêm 1 field vào table users để save lại thông tin customer của user đó (payjp_customer_id, 1 user có 1 customer, 1 customer có nhiều card and charge)
+
+3.2 User thanh toán lần đầu
+- Tạo 1 blade view và thêm đoạn sau:
+    <form action="{{ route('post.payjp') }}" method="post">
+        @csrf
+        <script
+            type="text/javascript"
+            src="https://checkout.pay.jp/"
+            class="payjp-button"
+            data-key="{{ config('payjp.public_key') }}"
+            data-text="カード情報を入力"
+            data-submit-text="カードを登録する"
+        ></script>
+    </form>
+  **Giải thích flow:
+   - Khi click button sẽ show 1 popup để người dùng nhập số card, ngày hết hạn, và số CVC (cái này tham khảo list testcard)
+   - Bước kiểm tra thẻ có chính xác hay ko sẽ được check ở đây (bên thứ 3 sẽ check)
+   - Khi submit sẽ tạo thông tin card và lưu lên hệ thống của chúng ta (cụ thể là shop của chúng ta) và trả về token.id được gán vào input hidden có name payjp-token (có thể truy cập https://pay.jp/d/events để kiểm tra)
+   - Từ payjp-token chúng ta sẽ tiếp tục xử lý:
+     -- Get được thông tin card vừa tạo
+     -- Tạo 1 customer với thông tin card bên trên
+     -- Xử lý charge cho customer đó
+
+3.3 User thanh toán từ lần thứ 2
+ - get list card trước đó của user đang login dựa vào payjp_customer_id
+ - khi submit:
+   -- nếu user có chọn lại thẻ cũ, ta sẽ có được card_id của thẻ và thanh toán qua thẻ đó của customer hiện tại
+   -- nếu user chọn thẻ mới, ta sẽ có được payjp-token và sẽ tạo card mới và thanh toán cho customer hiện tại
+
+4. Tài liệu tham khảo:
+- https://zakkuri.life/laravel-payjp/
+- https://zakkuri.life/laravel-payjp-2/
+- https://pay.jp/docs/testcard
+- https://pay.jp/docs/api/
+
+5. Thực thi trên production
+- update .env
+  PAYJP_PUBLIC_KEY=pk_live_XXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+  PAYJP_SECRET_KEY=sk_live_XXXXXXXXXXXXXXXXXXXXXXXXXXXXX

@@ -1,0 +1,88 @@
+1. Mô tả:
+- Liên kết ứng dụng của mình với ứng dụng thanh toán paypal
+- Gọi qua paypal để xử lý và nhận kết quả chứ ko viết api chi tiết
+- Lưu lại kết quả xử lý vào database
+
+2. Khái quát luồng xử lý:
+- Hệ thống của chúng ta sẽ nhúng Paypal vào
+- Khi người dùng nhấn chọn thanh toán bằng Paypal ở hệ thống, thì hệ thống sẽ gửi amount và currency sang Paypal để tạo 1 cái đơn hàng
+- Từ id của đơn hàng sẽ di chuyển sang bên thứ 3 để xử lý thanh toán (ở đây là paypal)
+- Sau khi xử lý xong paypal sẽ trả thông báo về cho hệ thống và hệ thống sẽ thống báo lại cho người dùng
+
+3. Các bước thực hiện với laravel
+- composer require srmklive/paypal
+- publish provider: php artisan vendor:publish --provider "Srmklive\PayPal\Providers\PayPalServiceProvider"
+- Truy cập https://developer.paypal.com/developer/applications để đăng ký 1 app vào hệ thống thanh toàn paypal
+- Sau khi tạo app sẽ có được client_id và client_secret
+- Mặc định khi dùng sandbox để test, khi ta tạo app lần đầu sẽ sinh ra cho chúng ta 2 account paypal để test, trong đó 1 cái là Business (account bán hàng), cái kia là Personal (account mua hàng) (* chúng ta có thể tự tạo thêm account)
+- update file .env
+  #PayPal API Mode
+  # Values: sandbox or live (Default: live)
+  PAYPAL_MODE=sandbox
+
+  #PayPal Setting & API Credentials - sandbox
+  PAYPAL_SANDBOX_CLIENT_ID=client_id của app đã tạo
+  PAYPAL_SANDBOX_CLIENT_SECRET=client_secret của app đã tạo
+
+  ***Lưu ý: ở đây ta dùng sandbox để dùng cho việc test, còn live là đưa lên dùng thực tế
+
+- Create view payment như sau:
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+
+<body>
+    <!-- Replace "test" with your own sandbox Business account app client ID -->
+    <script src="https://www.paypal.com/sdk/js?client-id={{ config('paypal.sandbox.client_id') }}"></script>
+    <!-- Set up a container element for the button -->
+    <div id="paypal-button-container"></div>
+    <script>
+        paypal.Buttons({
+            // Sets up the transaction when a payment button is clicked
+            createOrder: (data, actions) => {
+                return actions.order.create({
+                    purchase_units: [{
+                        amount: {
+                            value: '1' // Can also reference a variable or function
+                        }
+                    }]
+                });
+            },
+            // Finalize the transaction after payer approval
+            onApprove: (data, actions) => {
+                return actions.order.capture().then(function(orderData) {
+                    // Successful capture! For dev/demo purposes:
+                    console.log('Capture result', orderData, JSON.stringify(orderData, null, 2));
+                    const transaction = orderData.purchase_units[0].payments.captures[0];
+                    alert(`Transaction ${transaction.status}: ${transaction.id}\n\nSee console for all available details`);
+                    // When ready to go live, remove the alert and show a success message within this page. For example:
+                    // const element = document.getElementById('paypal-button-container');
+                    // element.innerHTML = '<h3>Thank you for your payment!</h3>';
+                    // Or go to another URL:  actions.redirect('thank_you.html');
+                });
+            }
+        }).render('#paypal-button-container');
+    </script>
+</body>
+
+</html>
+  ***method createOrder: sử lý tạo order khi người dùng click button paypal, sẽ gọi qua web thứ 3 là paypal để tiến hành login và thanh toán
+     method onApprove: sau khi người dùng thanh toán xong sẽ về method này, ở đoạn này ta sẽ check và xử lý thanh toán thành công or thất bại
+
+4. Tài liệu tham khảo:
+- https://developer.paypal.com
+- https://www.sandbox.paypal.com
+
+5. Thực thi trên production
+- Cần đăng kí 1 tài khoản paypal dưới quyền business
+- Đăng kí shop vào paypal để có được client_id và secret_key
+- update .env
+
+  PAYPAL_MODE=live
+
+  #PayPal Setting & API Credentials - live
+  PAYPAL_LIVE_CLIENT_ID=client_id của app đã tạo
+  PAYPAL_LIVE_CLIENT_SECRET=client_secret của app đã tạo

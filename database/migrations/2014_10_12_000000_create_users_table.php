@@ -20,6 +20,7 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->string('payjp_customer_id')->nullable()->comment('payjp顧客ID');
+            $table->string('gmo_member_id')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

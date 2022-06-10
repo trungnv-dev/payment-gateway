@@ -14,7 +14,7 @@
         </div>
         @endif
         <div class="col-md-8">
-            <form action="{{ route('post.payjp') }}" method="post">
+            <form action="{{ route('post.payjp') }}" method="POST">
                 @csrf
 
                 <div class="row mb-3">

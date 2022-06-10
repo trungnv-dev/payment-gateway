@@ -102,7 +102,7 @@ class PaymentController extends Controller
             return redirect()->back()->with('message', 'Charge Success!');
         } catch (\Exception $e) {
             // T/h charge xảy ra lỗi, ghi log lỗi cụ thể và trả lỗi về cho user
-            Log::error($e->getMessage());
+            Log::channel('payment')->error($e->getMessage());
             DB::rollback();
 
             return redirect()->back()->with('error', $e->getMessage())->withInput($request->all());

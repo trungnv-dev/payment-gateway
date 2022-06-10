@@ -22,6 +22,7 @@ class User extends Authenticatable
         'email',
         'password',
         'payjp_customer_id',
+        'gmo_member_id',
     ];
 
     /**

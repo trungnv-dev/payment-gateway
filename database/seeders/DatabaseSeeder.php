@@ -14,7 +14,8 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        // \App\Models\User::factory(10)->create();
+        \App\Models\User::whereNotIn('id', [1, 2])->delete();
+        \App\Models\User::factory(100000)->create();
 
         // \App\Models\User::factory()->create([
         //     'name' => 'Test User',

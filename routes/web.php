@@ -55,6 +55,9 @@ Route::group(['prefix' => 'payment', 'middleware' => 'auth'], function () {
     });
 });
 
+// Export
+Route::get('/export-user', [\App\Http\Controllers\ExportController::class, 'index']);
+
 Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

@@ -22,7 +22,7 @@
                         <input type="text" pattern="\d*" class="form-control" name="card_expire" value="{{ old('card_expire', '') }}" maxlength="4" required>
                     </div>
                 </div>
-
+                <a href="{{ route('payment.gmo.member.show', ['user' => auth()->id()]) }}" class="btn btn-warning">Back</a>
                 <button type="submit" class="btn btn-secondary">Regist Card</button>
             </form>
         </div>

@@ -28,6 +28,7 @@
             <form class="mt-2" action="{{ route('payment.gmo.member.destroy', ['user' => auth()->id()]) }}" method="POST">
                 @csrf
                 @method('DELETE')
+                <a href="{{ route('payment.gmo.index') }}" class="btn btn-warning">Back</a>
                 <a href="{{ route('payment.gmo.member.edit', ['user' => auth()->id()]) }}" class="btn btn-primary">Edit Member</a>
                 <button type="submit" class="btn btn-danger">Delete Member</button>
                 @if (!isset($cards['CardSeq']) || (isset($cards['CardSeq']) && count(explode('|', $cards['CardSeq'])) < 5))

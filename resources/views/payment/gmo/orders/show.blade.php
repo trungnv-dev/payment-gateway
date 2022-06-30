@@ -46,7 +46,7 @@
             @unless ($order->status)
             <form class="mt-2" action="{{ route('payment.gmo.order.execTran', ['order' => $order->id]) }}" method="POST">
                 @csrf
-
+                <a href="{{ route('payment.gmo.index') }}" class="btn btn-warning">Back</a>
                 <button type="submit" class="btn btn-danger">Pay</button>
             </form>
             @endunless
@@ -59,11 +59,15 @@
                 <tr>
                     <th style="width: 250px;">Name</th>
                     <th style="width: 200px;">Price</th>
+                    <th style="width: 200px;">Image</th>
                 </tr>
                 @foreach ($order->products as $product)
                 <tr>
                     <td>{{ $product->name }}</td>
                     <td>{{ $product->price }}</td>
+                    <td>
+                        <img style="width: 80px; height: 80px;" src="{{ img_path($product->src) }}">
+                    </td>
                 </tr>
                 @endforeach
             </table>

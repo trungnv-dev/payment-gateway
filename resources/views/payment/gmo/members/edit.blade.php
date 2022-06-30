@@ -15,7 +15,7 @@
                         <input type="text" class="form-control" name="member_name" value="{{ old('member_name', $member['MemberName'] ?? '') }}" required>
                     </div>
                 </div>
-
+                <a href="{{ route('payment.gmo.member.show', ['user' => auth()->id()]) }}" class="btn btn-warning">Back</a>
                 <button type="submit" class="btn btn-secondary">Edit</button>
             </form>
         </div>

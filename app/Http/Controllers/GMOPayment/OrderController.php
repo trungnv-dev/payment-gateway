@@ -60,6 +60,8 @@ class OrderController extends Controller
     public function show(Order $order)
     {
         $order->load('products');
+
+        // dd($order);
         
         return view('payment.gmo.orders.show', compact('order'));
     }

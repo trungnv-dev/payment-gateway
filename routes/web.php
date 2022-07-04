@@ -21,10 +21,6 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/test', function () {
-    return view('welcome');
-});
-
 Route::group(['prefix' => 'payment', 'middleware' => 'auth'], function () {
     Route::get('/paypal', [\App\Http\Controllers\PaymentController::class, 'paypal']);
     Route::get('/payjp', [\App\Http\Controllers\PaymentController::class, 'payjp']);

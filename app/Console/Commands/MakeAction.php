@@ -11,14 +11,14 @@ class MakeAction extends GeneratorCommand
      *
      * @var string
      */
-    protected $signature = 'action:generate {name}';
+    protected $signature = 'make:action {name}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Make a new action';
+    protected $description = 'Create a new action class';
 
     /**
      * The type of class being generated.

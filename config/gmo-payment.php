@@ -11,6 +11,7 @@ return [
         'capture' => 'CAPTURE', // Instant capture
         'auth'    => 'AUTH',    // Authorization
         'sauth'   => 'SAUTH',   // Simple authorization
+        'void'    => 'VOID',
     ],
     'order_stt'   => [
         0 => 'UNPAID',

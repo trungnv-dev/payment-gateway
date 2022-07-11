@@ -61,8 +61,6 @@ class OrderController extends Controller
     {
         $order->load('products');
 
-        // dd($order);
-        
         return view('payment.gmo.orders.show', compact('order'));
     }
 
@@ -91,6 +89,37 @@ class OrderController extends Controller
             DB::commit();
 
             return redirect()->route('payment.gmo.order.show', ['order' => $order->id])->withMessage('Pay Order Success!');
+        } catch (\Exception $e) {
+            Log::channel('payment')->error($e->getMessage());
+            DB::rollBack();
+
+            abort(500);
+        }
+    }
+
+    public function alterTran(Order $order)
+    {
+        DB::beginTransaction();
+
+        try {
+            $data = [
+                'AccessID'   => $order->access_id,
+                'AccessPass' => $order->access_pass,
+                'Amount'     => $order->amount,
+            ];
+
+            $transaction = CreditCardPaymentService::alterTran($data);
+
+            if (isset($transaction['ErrInfo'])) {
+                return redirect()->back()->withErrors(explode('|', $transaction['ErrInfo']));
+            }
+
+            $order->status = 0;
+            $order->save();
+
+            DB::commit();
+
+            return redirect()->route('payment.gmo.order.show', ['order' => $order->id])->withMessage('Cancel Order Success!');
         } catch (\Exception $e) {
             Log::channel('payment')->error($e->getMessage());
             DB::rollBack();

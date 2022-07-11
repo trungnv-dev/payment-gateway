@@ -49,6 +49,12 @@
                 <a href="{{ route('payment.gmo.index') }}" class="btn btn-warning">Back</a>
                 <button type="submit" class="btn btn-danger">Pay</button>
             </form>
+            @else
+            <form class="mt-2" action="{{ route('payment.gmo.order.alterTran', ['order' => $order->id]) }}" method="POST">
+                @csrf
+                <a href="{{ route('payment.gmo.index') }}" class="btn btn-warning">Back</a>
+                <button type="submit" class="btn btn-danger">Edit</button>
+            </form>
             @endunless
             <br>
         </div>

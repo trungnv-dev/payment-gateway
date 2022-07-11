@@ -51,6 +51,7 @@ Route::group(['prefix' => 'payment', 'middleware' => 'auth'], function () {
             Route::post('/create', 'store')->name('store');
             Route::get('/{order}', 'show')->name('show');
             Route::post('/exec-tran/{order}', 'execTran')->name('execTran');
+            Route::post('/alter-tran/{order}', 'alterTran')->name('alterTran');
         });
     });
 });

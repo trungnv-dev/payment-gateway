@@ -6,6 +6,7 @@ class CreditCardPaymentService extends GMOPaymentService
 {
     const ENTRY_TRAN = '/payment/EntryTran.idPass';
     const EXEC_TRAN  = '/payment/ExecTran.idPass';
+    const ALTER_TRAN  = '/payment/AlterTran.idPass';
 
     public static function entryTran($orderId, $amount)
     {
@@ -35,6 +36,22 @@ class CreditCardPaymentService extends GMOPaymentService
             'SitePass'   => config('gmo-payment.site_pass'),
             'MemberID'   => $data['MemberID'],
             'CardSeq'    => $data['CardSeq'],
+        ];
+
+        return self::execute($url, $body);
+    }
+
+    public static function alterTran($data = [])
+    {
+        $url = self::retrieveShopUrl(self::ALTER_TRAN);
+
+        $body = [
+            'ShopID'     => config('gmo-payment.shop_id'),
+            'ShopPass'   => config('gmo-payment.shop_pass'),
+            'JobCd'      => config('gmo-payment.job_cd.void'),
+            'Amount'     => $data['Amount'],
+            'AccessID'   => $data['AccessID'],
+            'AccessPass' => $data['AccessPass'],
         ];
 
         return self::execute($url, $body);

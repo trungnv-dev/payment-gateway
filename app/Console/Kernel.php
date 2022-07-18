@@ -16,7 +16,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         // $schedule->command('inspire')->hourly();
-        $schedule->command('scrape:tgdd')->daily();
+        $schedule->command('scrape:tgdd --auth')->daily();
     }
 
     /**

@@ -1,0 +1,311 @@
+0. Đăng ký tài khoản
+ - https://service.gmo-pg.com/cyllene/entry/trialStart.htm
+ - 1 account site: quản lý member and shop
+ - 1 account shop: quản lý các transaction
+
+1. Các phương thức bảo mật thanh toán
+ - No 3DS
+ - 3DS1.0
+ - 3DS2.0
+
+2. Các hình thức thanh toán
+ - Bulk             : thanh toán 1 lần
+ - Installment      : thanh toán nhiều lần
+ - Bonus (One time) :
+ - Bonus Installment:
+ - Revolving        :
+ 
+3. Các trạng thái của transaction
+ - CAPTURE: thực hiện thanh toán ngay (đã hoàn thành thanh toán và có tính vào doanh số bán hàng)
+ - AUTH   : thực hiện thanh toán tạm thời (đã hoàn thành thanh toán và không tính vào doanh số bán hàng)
+ - SALES  : sau khi bán hàng tạm thời (AUTH), tính vào doanh số bán hàng
+ - VOID   : cancel transaction đã được thanh toán trong cùng 1 ngày
+ - RETURN : cancel transaction đã được thanh toán không trong cùng 1 ngày
+ - UNPROCESSED  : Trạng thái khi vừa entry 1 transaction
+ - AUTHENTICATED: Trạng thái khi vừa exec 1 transaction, nhưng chưa thành công (đối với 3DS-1 và 3DS-2)
+ - RETURNX: 
+ - SAUTH  : tương tự như AUTH
+ - CHECK  : 
+
+ Tham khảo thêm: https://gmopg_docs:PF%cwa$GmCC@docs.mul-pay.jp/payment/credit/overview
+
+4. Thực hiện thanh toán (sử dụng No 3DS)
+ 4.1 Thực hiện entry 1 transaction
+    - URL: https://pt01.mul-pay.jp/payment/EntryTran.idPass
+    - Params:
+        - ShopID   : tshop00056337 (được cấp khi tạo account ở 1)
+        - ShopPass : dffu6rt1 (không phải password trong mail gửi về, cần login vào site or shop, vào mục password để get, https://kt01.mul-pay.jp/mulpayconsole/site/tsite00047885/shop/password/)
+        - JobCd    : CAPTURE (tham khảo 3)
+        - OrderID  : ID đơn hàng (tự generate, ko được trùng)
+        - Amount   : đơn vị tiền tính theo yên
+    - Response:
+        - Thành công:
+            - AccessID   : acdc7d53f7a78f488d8d0997eff99c6f
+            - AccessPass : 8edc86b5c8b34e92a224f577dec63990
+        - Thất bại:
+            - Xử lý save lỗi or show lỗi tương ứng (Tham khảo 8.2)
+        
+ 4.2 Thực hiện exec 1 transaction
+    - URL: https://pt01.mul-pay.jp/payment/ExecTran.idPass
+    - Trường hợp sử dụng token:
+    - Trường hợp input cardnumber: Người dùng nhập trực tiếp cardnumber (cần setting ở mục カード番号取扱 của shop)
+        - Params:
+            - AccessID   : acdc7d53f7a78f488d8d0997eff99c6f (tham khảo 4.1)
+            - AccessPass : 8edc86b5c8b34e92a224f577dec63990 (tham khảo 4.1)
+            - OrderID    : (tham khảo 4.1)
+            - Method     : 1 (nếu là AUTH thì có thể set = 2)
+            - PayTimes   : nếu method = 2 thì required (số lần trả)
+            - SiteID     : tsite00047885 (được cấp khi tạo account ở 1)
+            - SitePass   : pzwv3gds (không phải password trong mail gửi về, cần login vào site, vào mục password để get, https://kt01.mul-pay.jp/mulpayconsole/site/tsite00047885/site/password/)
+            - CardNo     : 4111111111111111 (card test)
+            - Expire     : 3412 (định dạng YYMM)
+        - Response:
+            - Thành công:
+                - ACS      : 0
+                - OrderID  : (tham khảo 4.1)
+                - Forward  :
+                - PayTimes :
+                - Approve  :
+                - TranID   :
+                - TranDate :
+            - Thất bại:
+                - Xử lý save lỗi or show lỗi tương ứng (Tham khảo 8.2)
+
+    - Trường hợp sử dụng memberID:
+        - Params:
+            - AccessID   : acdc7d53f7a78f488d8d0997eff99c6f (tham khảo 4.1)
+            - AccessPass : 8edc86b5c8b34e92a224f577dec63990 (tham khảo 4.1)
+            - OrderID    : (tham khảo 4.1)
+            - Method     : 1 (nếu là AUTH thì có thể set = 2)
+            - PayTimes   : nếu method = 2 thì required (số lần trả)
+            - SiteID     : tsite00047885 (được cấp khi tạo account ở 1)
+            - SitePass   : pzwv3gds (không phải password trong mail gửi về, cần login vào site, vào mục password để get, https://kt01.mul-pay.jp/mulpayconsole/site/tsite00047885/site/password/)
+            - MemberID   : id của member (tham khảo API create member)
+            - CardSeq    : chỉ định thẻ muốn dùng để thanh toán (1 member có thể đăng kí tối đa 5 thẻ)
+        - Response:
+            - Thành công:
+                - ACS      : 0
+                - OrderID  : (tham khảo 4.1)
+                - Forward  :
+                - PayTimes :
+                - Approve  :
+                - TranID   :
+                - TranDate :
+            - Thất bại:
+                - Xử lý save lỗi or show lỗi tương ứng (Tham khảo 8.2)
+
+5. Thực hiện thanh toán (sử dụng 3DS1)
+ **) Các điều cần lưu ý:
+    - set same_site trong file session.php = none để tránh trường hợp bị clear session khi call qua bên thứ 3 xử lý
+    - cần thêm cái TermUrl vào VerifyCsrfToken, vì khi ở bên thứ 3 call method POST nó ko có token gửi lên nên sẽ bị ném 419
+    
+ 5.1 Thực hiện tạo 1 transaction
+    - URL: https://pt01.mul-pay.jp/payment/EntryTran.idPass
+    - Params:
+        - ShopID   : tshop00056337 (được cấp khi tạo account ở 1)
+        - ShopPass : dffu6rt1 (không phải password trong mail gửi về, cần login vào site or shop, vào mục password để get, https://kt01.mul-pay.jp/mulpayconsole/site/tsite00047885/shop/password/)
+        - JobCd    : CAPTURE (tham khảo 3)
+        - OrderID  : ID đơn hàng (tự generate, ko được trùng)
+        - Amount   : đơn vị tiền tính theo yên
+        - TdFlag   : 1 (để xác định có sử dụng phương thức bảo mật 3DS1)
+    - Response:
+        - Thành công:
+            - AccessID   : acdc7d53f7a78f488d8d0997eff99c6f
+            - AccessPass : 8edc86b5c8b34e92a224f577dec63990
+        - Thất bại:
+            - Xử lý save lỗi or show lỗi tương ứng (Tham khảo 8.2)
+
+ 5.2 Thực hiện exec 1 transaction
+    **) Lưu ý: nếu card được chọn để thanh toán không có đăng ký xác thực 3DS thì sẽ xử lý như No 3DS (Tham khảo 4)
+    - URL: https://pt01.mul-pay.jp/payment/ExecTran.idPass
+    - Trường hợp sử dụng token:
+    - Trường hợp input cardnumber: Người dùng nhập trực tiếp cardnumber (cần setting ở mục カード番号取扱 của shop)
+        - Params:
+            - AccessID   : acdc7d53f7a78f488d8d0997eff99c6f (tham khảo 5.1)
+            - AccessPass : 8edc86b5c8b34e92a224f577dec63990 (tham khảo 5.1)
+            - OrderID    : (tham khảo 5.1)
+            - Method     : 1 (nếu là AUTH thì có thể set = 2)
+            - PayTimes   : nếu method = 2 thì required (số lần trả)
+            - SiteID     : tsite00047885 (được cấp khi tạo account ở 1)
+            - SitePass   : pzwv3gds (không phải password trong mail gửi về, cần login vào site, vào mục password để get, https://kt01.mul-pay.jp/mulpayconsole/site/tsite00047885/site/password/)
+            - CardNo     : 4111111111111111 (card test)
+            - Expire     : 3412 (định dạng YYMM)
+        - Response:
+            - Thành công:
+                - ACS      : 1
+                - ACSUrl   : url bên thứ 3 cung cấp dùng để check 3DS cho card hiện tại
+                - PaReq    : giá trị được mã hóa của công ty thẻ sau khi exec transaction thành công
+                - MD       : TranID của transaction đang thanh toán
+                ==> Tiếp tục xử lý ở 5.3
+            - Thất bại:
+                - Xử lý save lỗi or show lỗi tương ứng (Tham khảo 8.2)
+
+    - Trường hợp sử dụng memberID:
+        - Params:
+            - AccessID   : acdc7d53f7a78f488d8d0997eff99c6f (tham khảo 5.1)
+            - AccessPass : 8edc86b5c8b34e92a224f577dec63990 (tham khảo 5.1)
+            - OrderID    : (tham khảo 5.1)
+            - Method     : 1 (nếu là AUTH thì có thể set = 2)
+            - PayTimes   : nếu method = 2 thì required (số lần trả)
+            - SiteID     : tsite00047885 (được cấp khi tạo account ở 1)
+            - SitePass   : pzwv3gds (không phải password trong mail gửi về, cần login vào site, vào mục password để get, https://kt01.mul-pay.jp/mulpayconsole/site/tsite00047885/site/password/)
+            - MemberID   : id của member (tham khảo API create member)
+            - CardSeq    : chỉ định thẻ muốn dùng để thanh toán (1 member có thể đăng kí tối đa 5 thẻ)
+        - Response:
+            - Thành công:
+                - ACS      : 1
+                - ACSUrl   : url bên thứ 3 cung cấp dùng để check 3DS cho card hiện tại
+                - PaReq    : giá trị được mã hóa của công ty thẻ sau khi exec transaction thành công
+                - MD       : TranID của transaction đang thanh toán
+                ==> Tiếp tục xử lý ở 5.3
+            - Thất bại:
+                - Xử lý save lỗi or show lỗi tương ứng (Tham khảo 8.2)
+
+ 5.3 3DS1 screen call:
+    - URL: (sử dụng method POST đến ACSUrl)
+    - Params:
+        - ACSUrl   : url bên thứ 3 cung cấp dùng để check 3DS cho card hiện tại (từ 5.2)
+        - PaReq    : giá trị được mã hóa của công ty thẻ sau khi exec transaction thành công (từ 5.2)
+        - TermUrl  : url redirect của hệ thống khi xác thực 3DS thành công
+        - MD       : TranID của transaction đang thanh toán (từ 5.2)
+    - Response:
+        - Sau khi xác thực thành công:
+            - PaRes    : giá trị được mã hóa của công ty thẻ sau khi exec transaction thành công
+            - MD       : TranID của transaction đang thanh toán
+            ==> Tiếp tục xử lý ở 5.4
+        - Thất bại:
+            - Xử lý save lỗi or show lỗi tương ứng (Tham khảo 8.2)
+
+ 5.4 Thực hiện secure 1 transaction
+    - URL: https://pt01.mul-pay.jp/payment/SecureTran.idPass
+    - Params:
+        - PaRes    : giá trị được mã hóa của công ty thẻ sau khi exec transaction thành công
+        - MD       : TranID của transaction đang thanh toán (từ 5.2)
+    - Response:
+        - Sau khi xác thực thành công:
+            - OrderID  : (tham khảo 5.1)
+            - Forward  :
+            - PayTimes :
+            - Approve  :
+            - TranID   :
+            - TranDate :
+        - Thất bại:
+            - Xử lý save lỗi or show lỗi tương ứng (Tham khảo 8.2)
+
+6. Thực hiện thanh toán (sử dụng 3DS2)
+ **) Các điều cần lưu ý:
+    - set same_site trong file session.php = none để tránh trường hợp bị clear session khi call qua bên thứ 3 xử lý
+    - cần thêm cái RetUrl vào VerifyCsrfToken, vì khi ở bên thứ 3 call method POST nó ko có token gửi lên nên sẽ bị ném 419
+    
+ 6.1 Thực hiện tạo 1 transaction
+    - URL: https://pt01.mul-pay.jp/payment/EntryTran.idPass
+    - Params:
+        - ShopID   : tshop00056337 (được cấp khi tạo account ở 1)
+        - ShopPass : dffu6rt1 (không phải password trong mail gửi về, cần login vào site or shop, vào mục password để get, https://kt01.mul-pay.jp/mulpayconsole/site/tsite00047885/shop/password/)
+        - JobCd    : CAPTURE (tham khảo 3)
+        - OrderID  : ID đơn hàng (tự generate, ko được trùng)
+        - Amount   : đơn vị tiền tính theo yên
+        - TdFlag   : 2 (để xác định có sử dụng phương thức bảo mật 3DS2)
+        - Tds2Type : 3 (nếu card ko hỗ trở 3DS2 thì xác thực như No 3DS)
+    - Response:
+        - Thành công:
+            - AccessID   : acdc7d53f7a78f488d8d0997eff99c6f
+            - AccessPass : 8edc86b5c8b34e92a224f577dec63990
+        - Thất bại:
+            - Xử lý save lỗi or show lỗi tương ứng (Tham khảo 8.2)
+
+ 6.2 Thực hiện exec 1 transaction
+    **) Lưu ý: nếu card được chọn để thanh toán không có đăng ký xác thực 3DS2 || 3DS1 thì sẽ xử lý như No 3DS (Tham khảo 4)
+    - URL: https://pt01.mul-pay.jp/payment/ExecTran.idPass
+    - Trường hợp sử dụng token:
+    - Trường hợp input cardnumber: Người dùng nhập trực tiếp cardnumber (cần setting ở mục カード番号取扱 của shop)
+        - Params:
+            - AccessID   : acdc7d53f7a78f488d8d0997eff99c6f (tham khảo 6.1)
+            - AccessPass : 8edc86b5c8b34e92a224f577dec63990 (tham khảo 6.1)
+            - OrderID    : (tham khảo 6.1)
+            - Method     : 1 (nếu là AUTH thì có thể set = 2)
+            - PayTimes   : nếu method = 2 thì required (số lần trả)
+            - SiteID     : tsite00047885 (được cấp khi tạo account ở 1)
+            - SitePass   : pzwv3gds (không phải password trong mail gửi về, cần login vào site, vào mục password để get, https://kt01.mul-pay.jp/mulpayconsole/site/tsite00047885/site/password/)
+            - CardNo     : 4111111111111111 (card test)
+            - Expire     : 3412 (định dạng YYMM)
+            - RetUrl     : url redirect của hệ thống khi xác thực 3DS thành công
+        - Response:
+            - Thành công:
+                - ACS           : 2
+                - RedirectUrl   : url bên thứ 3 cung cấp dùng để check 3DS2 cho card hiện tại (url này sẽ gọi lên server 3DS)
+                ==> Tiếp tục xử lý ở 6.3
+            - Thất bại:
+                - Xử lý save lỗi or show lỗi tương ứng (Tham khảo 8.2)
+
+    - Trường hợp sử dụng memberID:
+        - Params:
+            - AccessID   : acdc7d53f7a78f488d8d0997eff99c6f (tham khảo 6.1)
+            - AccessPass : 8edc86b5c8b34e92a224f577dec63990 (tham khảo 6.1)
+            - OrderID    : (tham khảo 6.1)
+            - Method     : 1 (nếu là AUTH thì có thể set = 2)
+            - PayTimes   : nếu method = 2 thì required (số lần trả)
+            - SiteID     : tsite00047885 (được cấp khi tạo account ở 1)
+            - SitePass   : pzwv3gds (không phải password trong mail gửi về, cần login vào site, vào mục password để get, https://kt01.mul-pay.jp/mulpayconsole/site/tsite00047885/site/password/)
+            - MemberID   : id của member (tham khảo API create member)
+            - CardSeq    : chỉ định thẻ muốn dùng để thanh toán (1 member có thể đăng kí tối đa 5 thẻ)
+        - Response:
+            - Thành công:
+                - ACS      : 2
+                - RedirectUrl   : url bên thứ 3 cung cấp dùng để check 3DS2 cho card hiện tại (url này sẽ gọi lên server 3DS)
+                ==> Tiếp tục xử lý ở 6.3
+            - Thất bại:
+                - Xử lý save lỗi or show lỗi tương ứng (Tham khảo 8.2)
+
+ 6.3 3DS2 screen call:
+    - URL: (sử dụng method GET đến RedirectUrl)
+    - Response: redirect về RetUrl (từ 6.2)
+        - Sau khi xác thực thành công:
+            - AccessID : TranID của transaction đang thanh toán
+            ==> Tiếp tục xử lý ở 6.4
+        - Thất bại:
+            - Xử lý save lỗi or show lỗi tương ứng (Tham khảo 8.2)
+
+ 6.4 Thực hiện secure 1 transaction
+    - URL: https://pt01.mul-pay.jp/payment/SecureTran2.idPass
+    - Params:
+        - AccessID   : acdc7d53f7a78f488d8d0997eff99c6f (từ 6.3)
+        - AccessPass : 8edc86b5c8b34e92a224f577dec63990 (tham khảo 6.1)
+    - Response:
+        - Sau khi xác thực thành công:
+            - OrderID  : (tham khảo 6.1)
+            - Forward  :
+            - PayTimes :
+            - Approve  :
+            - TranID   :
+            - TranDate :
+        - Thất bại:
+            - Xử lý save lỗi or show lỗi tương ứng (Tham khảo 8.2)
+ **) Các điều cần lưu ý:
+    - set same_site trong file session.php = none để tránh trường hợp bị clear session khi call qua bên thứ 3 xử lý
+    - cần thêm cái TermUrl vào VerifyCsrfToken, vì khi ở bên thứ 3 call method POST nó ko có token gửi lên nên sẽ bị ném 419
+    
+7. Thực hiện alter 1 transaction (đối với transaction đã được exec)
+    - URL: https://pt01.mul-pay.jp/payment/AlterTran.idPass
+    - Params:
+        - ShopID     : tshop00056337 (được cấp khi tạo account ở 1)
+        - ShopPass   : dffu6rt1 (không phải password trong mail gửi về, cần login vào site or shop, vào mục password để get, https://kt01.mul-pay.jp/mulpayconsole/site/tsite00047885/shop/password/)
+        - JobCd      : CANCEL (hủy transaction) / SALES (đối vs transaction AUTH) (còn các jobCd khác)
+        - AccessID   : acdc7d53f7a78f488d8d0997eff99c6f (tham khảo 4.1 || 5.1 || 6.1)
+        - AccessPass : 8edc86b5c8b34e92a224f577dec63990 (tham khảo 4.1 || 5.1 || 6.1)
+        - Amount     : đơn vị tiền tính theo yên
+    - Response:
+        - Thành công:
+            - OrderID  : (tham khảo 4.1 || 5.1 || 6.1)
+            - Forward  :
+            - PayTimes :
+            - Approve  :
+            - TranID   :
+            - TranDate :
+        - Thất bại:
+            - Xử lý save lỗi or show lỗi tương ứng (Tham khảo 8.2)
+
+8. Tài liệu:
+ 8.1 List API: https://gmopg_docs:PF%cwa$GmCC@docs.mul-pay.jp/payment/credit/paymentflow
+ 8.2 Danh sách lỗi và mã lỗi: https://gmopg_docs:PF%cwa$GmCC@docs.mul-pay.jp/payment/credit/errorcode
+ 8.3 Danh sách card test: https://gmopg_docs:PF%cwa$GmCC@docs.mul-pay.jp/payment/credit/testcard

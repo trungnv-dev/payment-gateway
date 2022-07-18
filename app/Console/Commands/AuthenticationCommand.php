@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Enums\UserRole;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Auth;
 
@@ -31,12 +32,14 @@ class AuthenticationCommand extends Command
         $email = $this->ask("Authentication [Email]");
         $password = $this->secret("Authentication [Password]");
 
-        if ($auth = Auth::attempt(['email' => $email, 'password' => $password])) {
+        if (Auth::attempt(['email' => $email, 'password' => $password]) && Auth::user()->role == UserRole::ADMIN) {
             $this->alert("Hi, ". Auth::user()->name);
+
+            return true;
         } else {
             $this->error('Unauthentication!');
-        }
 
-        return $auth;
+            return false;
+        }
     }
 }

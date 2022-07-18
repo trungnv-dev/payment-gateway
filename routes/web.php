@@ -47,6 +47,7 @@ Route::group(['prefix' => 'payment', 'middleware' => 'auth'], function () {
         });
         // charge
         Route::controller(OrderController::class)->prefix('order')->name('payment.gmo.order.')->group(function () {
+            Route::post('/{order}/secure/{type?}', 'secureTran')->name('secureTran');
             Route::get('/create', 'create')->name('create');
             Route::post('/create', 'store')->name('store');
             Route::get('/{order}', 'show')->name('show');

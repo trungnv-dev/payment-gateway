@@ -50,3 +50,17 @@ if (!function_exists('img_path')) {
         return '';
     }
 }
+
+if (!function_exists('generate_order_id')) {
+    function generate_order_id($orderId)
+    {
+        return config('app.name') . "-$orderId" . now()->timestamp;
+    }
+}
+
+if (!function_exists('generate_member_id')) {
+    function generate_member_id($memberId)
+    {
+        return config('app.name') . "-$memberId" . \Str::uuid()->getHex();
+    }
+}

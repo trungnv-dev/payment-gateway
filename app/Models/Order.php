@@ -14,7 +14,10 @@ class Order extends Model
         'access_id',
         'access_pass',
         'total_charge',
-        'status'
+        'status',
+        'order_id',
+        'job_cd',
+        'secure',
     ];
 
     public function products()

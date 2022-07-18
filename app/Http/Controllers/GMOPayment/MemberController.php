@@ -26,8 +26,9 @@ class MemberController extends Controller
         abort_if($user->gmo_member_id, 404);
 
         DB::beginTransaction();
+
         try {
-            $memberId = 'mem_' . $user->id . '_' . \Str::uuid()->getHex();
+            $memberId = generate_member_id($user->id);
 
             $response = MemberService::saveMember($memberId, $request->member_name);
 
@@ -53,9 +54,9 @@ class MemberController extends Controller
 
         $member = MemberService::searchMember($user->gmo_member_id);
 
-        $cards = CardService::searchCard($user->gmo_member_id);
-
         if (isset($member['MemberID'])) {
+            $cards = CardService::searchCard($user->gmo_member_id);
+            
             return view('payment.gmo.members.show', compact('member', 'cards'));
         }
 

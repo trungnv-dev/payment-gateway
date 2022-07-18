@@ -20,7 +20,10 @@ return new class extends Migration
             $table->string('access_id', 255)->nullable();
             $table->string('access_pass', 255)->nullable();
             $table->unsignedInteger('total_charge');
-            $table->boolean('status')->default(0);
+            $table->string('status', 30);
+            $table->string('order_id', 30)->nullable();
+            $table->string('job_cd', 20);
+            $table->unsignedSmallInteger('secure')->default(0);
             $table->timestamps();
         });
     }

@@ -27,7 +27,7 @@ class ScrapeCommand extends Command
      */
     public function handle()
     {
-        if ($this->option('auth')) {
+        if (!$this->option('auth')) {
             $auth = $this->call('authentication');
             if (!$auth) return;
         }

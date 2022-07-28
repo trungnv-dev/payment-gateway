@@ -4,7 +4,7 @@
 <div class="container">
     <div class="row justify-content-center">
         @include('payment.gmo.error-messages')
-        
+
         <div class="col-md-8">
             <form action="{{ route('payment.gmo.order.store') }}" method="POST">
                 @csrf
@@ -28,6 +28,40 @@
                     </tr>
                     @endforeach
                 </table>
+                {{ $products->links() }}<br>
+                <strong>SELECT JOBCD</strong><br><br>
+                <div class="form-check">
+                    <input class="form-check-input" name="job_cd" type="radio" value="0" id="job_cd_0" checked>
+                    <label class="form-check-label" for="job_cd_0">
+                        Capture
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" name="job_cd" type="radio" value="1" id="job_cd_1">
+                    <label class="form-check-label" for="job_cd_1">
+                        Auth
+                    </label>
+                </div>
+                <br>
+                <strong>SELECT 3DS</strong><br><br>
+                <div class="form-check">
+                    <input class="form-check-input" name="td_flag" type="radio" value="0" id="td_flag_0" checked>
+                    <label class="form-check-label" for="td_flag_0">
+                        No 3DS
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" name="td_flag" type="radio" value="1" id="td_flag_1">
+                    <label class="form-check-label" for="td_flag_1">
+                        3DS-1
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" name="td_flag" type="radio" value="2" id="td_flag_2">
+                    <label class="form-check-label" for="td_flag_2">
+                        3DS-2
+                    </label>
+                </div>
                 <br>
                 <a href="{{ route('payment.gmo.index') }}" class="btn btn-warning">Back</a>
                 <button type="submit" class="btn btn-secondary">Create Order</button>

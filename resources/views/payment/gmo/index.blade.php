@@ -15,35 +15,46 @@
         </div>
         @endif
 
-        <div class="col-md-8">
-            <a href="{{ route('payment.gmo.order.create') }}" class="btn btn-primary">Create Order</a>
-
-            @if (auth()->user()->gmo_member_id)
-            <a href="{{ route('payment.gmo.member.show', ['user' => auth()->id()]) }}" class="btn btn-info">Info Member Payment</a>
-            @else
-            <a href="{{ route('payment.gmo.member.create') }}" class="btn btn-primary">Regist member</a>
-            @endif
-        </div>
-
         <br><br>
+        <div class="col-10 justify-content-center">
+            <form method="GET">
+                Order Date:
+                <input type="date" class="w-25 d-inline form-control" name="date_to" value="{{ request('date_to') ?? date('Y-m-d') }}"> -
+                <input type="date" class="w-25 d-inline form-control" name="date_from" value="{{ request('date_from') ?? date('Y-m-d') }}">
+                <input type="submit" class="btn btn-primary" value="Search" />
+                @if (Gate::denies('admin'))
+                    <div class="col-md-8 d-inline">
+                        <a href="{{ route('payment.gmo.order.create') }}" class="btn btn-primary">Create Order</a>
+
+                        @if (auth()->user()->gmo_member_id)
+                        <a href="{{ route('payment.gmo.member.show', ['user' => auth()->id()]) }}" class="btn btn-info">Info Member Payment</a>
+                        @else
+                        <a href="{{ route('payment.gmo.member.create') }}" class="btn btn-primary">Regist member</a>
+                        @endif
+                    </div>
+                @endif
+            </form>
+        </div>
         <div class="col-md-12 mt-2">
             <table class="table">
                 <tr>
-                    <th style="width: 250px;">OrderID</th>
+                    <th style="width: 300px;">OrderID</th>
                     <th style="width: 200px;">AccessID</th>
                     <th style="width: 200px;">AccessPass</th>
-                    <th style="width: 200px;">Amount</th>
-                    <th style="width: 250px;">Status</th>
+                    <th style="width: 100px;">Amount</th>
+                    <th style="width: 150px;">Secure Regist</th>
+                    <th style="width: 120px;">Status Paid</th>
                     <th style="width: 250px;">TimeCreate</th>
                     <th></th>
                 </tr>
                 @foreach ($orders as $order)
                 <tr>
-                    <td>{{ $order->id }}</td>
+                    <td>{{ $order->order_id }}</td>
                     <td>{{ $order->access_id }}</td>
                     <td>{{ $order->access_pass }}</td>
                     <td>{{ $order->total_charge }}</td>
-                    <td>{{ config('gmo-payment.order_stt.'.$order->status) }}</td>
+                    <td>{{ App\Enums\GMOPayment::STT_SECURE[$order->secure] }}</td>
+                    <td>{{ $order->status }}</td>
                     <td>{{ $order->created_at }}</td>
                     <td>
                         <a href="{{ route('payment.gmo.order.show', ['order' => $order->id]) }}">Detail</a>

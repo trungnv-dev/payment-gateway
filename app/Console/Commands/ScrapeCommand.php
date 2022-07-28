@@ -11,7 +11,7 @@ class ScrapeCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'scrape:tgdd';
+    protected $signature = 'scrape:tgdd {--auth}';
 
     /**
      * The console command description.
@@ -27,9 +27,13 @@ class ScrapeCommand extends Command
      */
     public function handle()
     {
-        echo "Start Crawler Data TGDD \n";
+        if (!$this->option('auth')) {
+            $auth = $this->call('authentication');
+            if (!$auth) return;
+        }
+        $this->info("Start Crawler Data TGDD");
         $bot = new \App\Scraper\TGDD();
         $bot->scrape();
-        echo "End Crawler Data TGDD \n";
+        $this->info("End Crawler Data TGDD");
     }
 }

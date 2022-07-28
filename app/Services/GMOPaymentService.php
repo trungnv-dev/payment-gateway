@@ -2,20 +2,29 @@
 
 namespace App\Services;
 
+use App\Enums\GMOPayment;
 use GuzzleHttp\Client;
 
 class GMOPaymentService
 {
     public static function retrieveShopUrl($path = null)
     {
-        return config('gmo-payment.gmo_url') . $path;
+        return GMOPayment::GMO_URL_DEV . $path;
     }
 
     public static function retrieveBodySite()
     {
         return [
-            'SiteID'   => config('gmo-payment.site_id'),
-            'SitePass' => config('gmo-payment.site_pass'),
+            'SiteID'   => GMOPayment::SITE_ID,
+            'SitePass' => GMOPayment::SITE_PASS,
+        ];
+    }
+
+    public static function retrieveBodyShop()
+    {
+        return [
+            'ShopID'   => GMOPayment::SHOP_ID,
+            'ShopPass' => GMOPayment::SHOP_PASS,
         ];
     }
 

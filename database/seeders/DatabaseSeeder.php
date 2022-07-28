@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Enums\UserRole;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -14,12 +15,13 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        \App\Models\User::whereNotIn('id', [1, 2])->delete();
-        \App\Models\User::factory(100000)->create();
-
-        // \App\Models\User::factory()->create([
-        //     'name' => 'Test User',
-        //     'email' => 'test@example.com',
-        // ]);
+        // \App\Models\User::whereNotIn('id', [1, 2])->delete();
+        // \App\Models\User::factory(100000)->create();
+        \App\Models\User::create([
+            'role' => UserRole::ADMIN,
+            'name' => 'ADMIN',
+            'email' => 'admin@gmail.com',
+            'password' => 'Trungtka123$',
+        ]);
     }
 }

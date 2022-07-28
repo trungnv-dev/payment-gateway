@@ -12,6 +12,7 @@ class VerifyCsrfToken extends Middleware
      * @var array<int, string>
      */
     protected $except = [
-        //
+        'https://payment-gateway.test/payment/gmo/order/*/secure',
+        'https://payment-gateway.test/payment/gmo/order/*/secure/2'
     ];
 }

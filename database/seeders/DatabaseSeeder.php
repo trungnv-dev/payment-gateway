@@ -20,8 +20,8 @@ class DatabaseSeeder extends Seeder
         \App\Models\User::create([
             'role' => UserRole::ADMIN,
             'name' => 'ADMIN',
-            'email' => 'admin@gmail.com',
-            'password' => 'Trungtka123$',
+            'email' => config('app.login_admin_mail'),
+            'password' => config('app.login_admin_pass'),
         ]);
     }
 }

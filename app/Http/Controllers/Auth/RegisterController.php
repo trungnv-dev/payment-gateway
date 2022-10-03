@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Enums\UserRole;
 use App\Http\Controllers\Controller;
+use App\Mail\TestSendMail;
 use App\Providers\RouteServiceProvider;
 use App\Models\User;
 use Illuminate\Foundation\Auth\RegistersUsers;
@@ -65,11 +66,15 @@ class RegisterController extends Controller
      */
     protected function create(array $data)
     {
-        return User::create([
+        $user = User::create([
             'role'     => UserRole::MEMBER,
             'name'     => $data['name'],
             'email'    => $data['email'],
             'password' => $data['password'],
         ]);
+
+        \Mail::to($user->email)->send(new TestSendMail($data, 'Regist Member Success!', 'emails/regist-success'));
+
+        return $user;
     }
 }

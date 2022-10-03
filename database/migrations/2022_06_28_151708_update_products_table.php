@@ -28,7 +28,7 @@ return new class extends Migration
     public function down()
     {
         Schema::table('products', function (Blueprint $table) {
-            $table->unsignedInteger('price');
+            $table->unsignedInteger('price')->change();
             $table->dropColumn([
                 'rating',
                 'src',

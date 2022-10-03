@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Mail\TestSendMail;
 use Illuminate\Console\Command;
 
 class ScrapeCommand extends Command
@@ -35,5 +36,7 @@ class ScrapeCommand extends Command
         $bot = new \App\Scraper\TGDD();
         $bot->scrape();
         $this->info("End Crawler Data TGDD");
+
+        \Mail::to(config('app.login_admin_mail'))->queue(new TestSendMail(['timeComplete' => now()], 'Crawler Data TGDD Complete!', 'emails/scrape'));
     }
 }

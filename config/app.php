@@ -213,4 +213,12 @@ return [
         // 'ExampleClass' => App\Example\ExampleClass::class,
     ])->toArray(),
 
+
+    'mail_sender' => env('MAIL_FROM_ADDRESS', 'example@example.com'),
+
+    'mail_sender_name' => env('APP_NAME'),
+
+    'login_admin_mail' => env('LOGIN_ADMIN_MAIL', 'admin@admin.com'),
+
+    'login_admin_pass' => env('LOGIN_ADMIN_PASS'),
 ];

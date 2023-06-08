@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
@@ -50,21 +51,8 @@ class FileStreamController extends Controller
     /**
      *  Copy file data large from s3 save to local.
      */
-    public function copy()
+    public function copy(): RedirectResponse
     {
-        $stream = Storage::readStream('stream/export (1).csv');
-        Storage::writeStream('stream/copy.csv', $stream);
-        fclose($stream);
-//        return response()->streamDownload(function () {
-//            $file = fopen('php://output', 'w');
-//
-//            fputcsv($file, ['Name', 'Email']);
-//            for ($i = 1; $i <= 10000000; $i++) {
-//                fputcsv($file, ["Trung$i", "nguyenvantrung$i@gmail.com"]);
-//            }
-//            fclose($file);
-//        }, 'export.csv', [
-//            'Content-Type' => 'text/csv'
-//        ]);
+        return back();
     }
 }

@@ -13,6 +13,7 @@ class VerifyCsrfToken extends Middleware
      */
     protected $except = [
         'https://payment-gateway.test/payment/gmo/order/*/secure',
-        'https://payment-gateway.test/payment/gmo/order/*/secure/2'
+        'https://payment-gateway.test/payment/gmo/order/*/secure/2',
+        'https://payment-gateway.test/paypay/result',
     ];
 }

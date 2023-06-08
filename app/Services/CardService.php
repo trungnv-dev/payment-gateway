@@ -23,6 +23,7 @@ class CardService extends GMOPaymentService
             'MemberID' => $memberId,
             'CardNo'   => $cardNo,
             'Expire'   => $expire,
+            // 'Token'   => "e5e770af1226dacf75eaebb83a3bd4aa9f4c5853c1761ba9f0eab921e7a29b27",
         ]);
 
         return self::execute($url, $body);

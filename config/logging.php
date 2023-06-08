@@ -51,6 +51,11 @@ return [
     */
 
     'channels' => [
+        'deprecations' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/php-deprecation-warnings.log'),
+        ],
+        
         'stack' => [
             'driver' => 'stack',
             'channels' => ['single'],
@@ -122,6 +127,14 @@ return [
             'driver' => 'single',
             'path' => storage_path('logs/payment.log'),
             'level' => env('LOG_LEVEL', 'debug'),
+        ],
+
+        'mail' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/mails/log.log'),
+            'level' => 'info',
+            'days' => 30,
+            'permission' => 0777,
         ],
     ],
 

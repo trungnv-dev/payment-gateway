@@ -1,10 +1,13 @@
 <?php
 
+use App\Http\Controllers\FileStreamController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\GMOPayment\HomeController;
 use App\Http\Controllers\GMOPayment\MemberController;
 use App\Http\Controllers\GMOPayment\CardController;
 use App\Http\Controllers\GMOPayment\OrderController;
+use App\Http\Controllers\PaymentController;
+use Illuminate\Http\Request;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,15 +24,27 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('paypay', function () {
+    return view('paypay-test');
+});
+
+Route::post('paypay/result', function (Request $request) {
+    return response()->json($request->all());
+});
+
+// Route::post('paypay/result', [HomeController::class, 'payPay']);
+
 Route::group(['prefix' => 'payment', 'middleware' => 'auth'], function () {
-    Route::get('/paypal', [\App\Http\Controllers\PaymentController::class, 'paypal']);
-    Route::get('/payjp', [\App\Http\Controllers\PaymentController::class, 'payjp']);
-    Route::post('/payjp', [\App\Http\Controllers\PaymentController::class, 'paymentPayjp'])->name('post.payjp');
+    Route::get('/paypal', [PaymentController::class, 'paypal']);
+    Route::get('/payjp', [PaymentController::class, 'payjp']);
+    Route::post('/payjp', [PaymentController::class, 'paymentPayjp'])->name('post.payjp');
     // Route::get('/paypal-success', [\App\Http\Controllers\PaymentController::class, 'paypalSuccess'])->name('paypal.success');
     // Route::get('/paypal-cancel', [\App\Http\Controllers\PaymentController::class, 'paypalCancel'])->name('paypal.cancel');
 
     Route::group(['prefix' => 'gmo'], function () {
         Route::get('/', [HomeController::class, 'index'])->name('payment.gmo.index');
+        Route::get('/credit-cards', [HomeController::class, 'creditCard'])->name('payment.gmo.credit_card');
+        Route::get('/paypay', [HomeController::class, 'payPay'])->name('payment.gmo.paypay');
         // member
         Route::controller(MemberController::class)->prefix('member')->name('payment.gmo.member.')->group(function () {
             Route::get('/create', 'create')->name('create');
@@ -57,9 +72,14 @@ Route::group(['prefix' => 'payment', 'middleware' => 'auth'], function () {
     });
 });
 
-// Export
-Route::get('/export-user', [\App\Http\Controllers\ExportController::class, 'index']);
+// File stream
+Route::group(['prefix' => 'file-stream', 'middleware' => 'auth'], function () {
+    Route::get('/', [FileStreamController::class, 'index'])->name('file_stream.index');
+    Route::get('/export', [FileStreamController::class, 'export'])->name('file_stream.export');
+    Route::get('/download', [FileStreamController::class, 'download'])->name('file_stream.download');
+    Route::get('/copy', [FileStreamController::class, 'copy'])->name('file_stream.copy');
+});
 
 Auth::routes();
 
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::get('/home', [HomeController::class, 'index'])->name('home');

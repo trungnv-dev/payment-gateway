@@ -72,6 +72,10 @@
                                         {{ __('Payment GMO') }}
                                     </a>
 
+                                    <a class="dropdown-item" href="{{ route('file_stream.index') }}">
+                                        {{ __('File Stream') }}
+                                    </a>
+
                                     <a class="dropdown-item" href="{{ route('logout') }}"
                                        onclick="event.preventDefault();
                                                      document.getElementById('logout-form').submit();">

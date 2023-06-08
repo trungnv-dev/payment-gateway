@@ -16,7 +16,8 @@ class TestSendMail extends Mailable
      *
      * @return void
      */
-    public $data;
+    public $data; // using public data then don't need with
+    // protected $data; // using public data then need with
     public $subject;
     public $view;
 
@@ -38,8 +39,9 @@ class TestSendMail extends Mailable
         $name = config('app.mail_sender_name');
 
         return $this->view($this->view)
+                // ->text($this->view)
                 ->from($address, $name)
-                ->subject($this->subject)
-                ->with(['data' => $this->data]);
+                ->subject($this->subject);
+                // ->with(['data' => $this->data]);
     }
 }

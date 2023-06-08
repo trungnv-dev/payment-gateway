@@ -9,11 +9,15 @@ use Illuminate\Support\Facades\Log;
 
 class CardController extends Controller
 {
-    public function create()
+    public function create(Request $request)
     {
         abort_unless(auth()->user()->gmo_member_id, 404);
 
-        return view('payment.gmo.cards.create');
+        if ($request->type == 1) {
+            return view('payment.gmo.credit-cards.cards.create_token');
+        }
+
+        return view('payment.gmo.credit-cards.cards.create');
     }
 
     public function store(Request $request)

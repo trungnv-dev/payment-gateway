@@ -2,7 +2,6 @@
 
 namespace App\Console\Commands;
 
-use App\Mail\TestSendMail;
 use Illuminate\Console\Command;
 
 class ScrapeCommand extends Command
@@ -12,7 +11,7 @@ class ScrapeCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'scrape:tgdd {--auth}';
+    protected $signature = 'scrape:tgdd {--remind}';
 
     /**
      * The console command description.
@@ -32,11 +31,12 @@ class ScrapeCommand extends Command
             $auth = $this->call('authentication');
             if (!$auth) return;
         }
-        $this->info("Start Crawler Data TGDD");
+        $this->info(now() . ":: Start Crawler Data TGDD");
         $bot = new \App\Scraper\TGDD();
         $bot->scrape();
-        $this->info("End Crawler Data TGDD");
-
-        \Mail::to(config('app.login_admin_mail'))->queue(new TestSendMail(['timeComplete' => now()], 'Crawler Data TGDD Complete!', 'emails/scrape'));
+        $timeEnd = now();
+        $this->alert("Crawler Data TGDD Complete!");
+        $this->alert("Time complete: $timeEnd");
+        $this->info("$timeEnd:: End Crawler Data TGDD");
     }
 }

@@ -6,18 +6,6 @@ use BenSampo\Enum\Enum;
 
 final class GMOPayment extends Enum
 {
-    // const SITE_ID               = 'tsite00048307';
-    // const SITE_PASS             = '5mdakt8x';
-    // const SHOP_ID               = 'tshop00056930';
-    // const SHOP_PASS             = '7aytd52d';
-    const SITE_ID               = 'tsite00049641';
-    const SITE_PASS             = '6uvnnkyy';
-    const SHOP_ID               = 'tshop00059503';
-    const SHOP_PASS             = 'evhs7yhn';
-
-    const GMO_URL_DEV           = 'https://pt01.mul-pay.jp';
-    const GMO_URL_STG           = '';
-
     const JOB_CD_CAPTURE        = 'CAPTURE';
     const JOB_CD_AUTH           = 'AUTH';
     const JOB_CD_CANCEL         = 'CANCEL';

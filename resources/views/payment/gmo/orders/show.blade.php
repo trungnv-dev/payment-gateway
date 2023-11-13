@@ -90,14 +90,14 @@
                                 <th></th>
                                 <th style="width: 250px;">CardNo</th>
                                 <th style="width: 200px;">Expire</th>
-                                <th style="width: 200px;">Brand</th>
+                                {{-- <th style="width: 200px;">Brand</th> --}}
                             </tr>
                             @for ($i = 0; $i < count(explode('|', $cards['CardSeq'])); $i++)
                             <tr>
                                 <td><input type="radio" name="card_seq" value="{{ explode('|', $cards['CardSeq'])[$i] }}"></td>
                                 <td>{{ explode('|', $cards['CardNo'])[$i] }}</td>
                                 <td>{{ explode('|', $cards['Expire'])[$i] }}</td>
-                                <td>{{ explode('|', $cards['Brand'])[$i] }}</td>
+                                {{-- <td>{{ explode('|', $cards['Brand'])[$i] }}</td> --}}
                             </tr>
                             @endfor
                         </table>
@@ -129,7 +129,7 @@
                 @elseif ($transaction['Status'] == App\Enums\GMOPayment::STATUS_PAID["AUTH"])
                 <input type="hidden" name="cancel" value="0">
                 <button type="submit" class="btn btn-success">Sales</button>
-                
+
                 @endif
             </form>
 

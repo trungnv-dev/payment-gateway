@@ -3,17 +3,7 @@
 @section('content')
 <div class="container">
     <div class="row justify-content-center">
-        @if(session()->has('message'))
-        <div class="alert alert-info alert-dismissible notice msg_server">
-            <div>{{ session('message') }}</div>
-        </div>
-        @endif
-        
-        @if(session()->has('error'))
-        <div class="alert alert-danger alert-dismissible notice msg_server">
-            <div>{{ session('error') }}</div>
-        </div>
-        @endif
+        @include('payment.gmo.error-messages')
 
         <br><br>
         <div class="col-10 justify-content-center">

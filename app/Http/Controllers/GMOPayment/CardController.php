@@ -4,14 +4,15 @@ namespace App\Http\Controllers\GMOPayment;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Services\CardService;
+use Ecs\GmoPG\Services\MemberCardService;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Log;
 
 class CardController extends Controller
 {
     public function create(Request $request)
     {
-        abort_unless(auth()->user()->gmo_member_id, 404);
+        abort_unless(auth()->user()->gmo_member_id, Response::HTTP_NOT_FOUND);
 
         if ($request->type == 1) {
             return view('payment.gmo.credit-cards.cards.create_token');
@@ -24,19 +25,25 @@ class CardController extends Controller
     {
         $user = auth()->user();
 
-        abort_unless($user->gmo_member_id, 404);
+        abort_unless($user->gmo_member_id, Response::HTTP_NOT_FOUND);
 
         try {
-            $response = CardService::saveCard($user->gmo_member_id, $request->card_number, $request->card_expire);
+            $response = resolve(MemberCardService::class)
+                ->saveCard([
+                    'MemberID' => $user->gmo_member_id,
+                    'CardNo'   => $request->card_number,
+                    'Expire'   => $request->card_expire,
+                    // 'Token'   => "e5e770af1226dacf75eaebb83a3bd4aa9f4c5853c1761ba9f0eab921e7a29b27",
+                ]);
 
             if (isset($response['CardSeq'])) {
                 return redirect()->route('payment.gmo.member.show', ['user' => $user->id])->withMessage('Regist Card Success!');
             }
-            
-            return redirect()->back()->withErrors(explode('|', $response['ErrInfo']))->withInput($request->all());
+
+            return redirect()->back()->withErrors($response['errors'])->withInput($request->all());
         } catch (\Exception $e) {
             Log::channel('payment')->error($e->getMessage());
-            abort(500);
+            abort(Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -44,9 +51,13 @@ class CardController extends Controller
     {
         $user = auth()->user();
 
-        abort_unless($user->gmo_member_id, 404);
+        abort_unless($user->gmo_member_id, Response::HTTP_NOT_FOUND);
 
-        $response = CardService::deleteCard($user->gmo_member_id, $request->card_seq);
+        $response = resolve(MemberCardService::class)
+            ->deleteCard([
+                'MemberID' => $user->gmo_member_id,
+                'CardSeq'  => $request->card_seq,
+            ]);
 
         if (isset($response['CardSeq'])) {
             return redirect()->route('payment.gmo.member.show', ['user' => $user->id])->withMessage('Delete Card Success!');

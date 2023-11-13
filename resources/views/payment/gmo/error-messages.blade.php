@@ -12,8 +12,8 @@
 
 @if($errors->any())
     <div class="alert alert-danger alert-dismissible notice msg_server">
-        @foreach ($errors->toArray() as $error)
-            <div>{{ __('gmo-payment-error.'.$error[0]) }}</div>
+        @foreach ($errors->all() as $error)
+            <div>{{ $error }}</div>
         @endforeach
     </div>
 @endif

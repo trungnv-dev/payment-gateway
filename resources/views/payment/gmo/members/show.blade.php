@@ -44,7 +44,7 @@
                 <tr>
                     <th style="width: 250px;">CardNo</th>
                     <th style="width: 200px;">Expire</th>
-                    <th style="width: 200px;">Brand</th>
+                    {{-- <th style="width: 200px;">Brand</th> --}}
                     <th style="width: 200px;">Status</th>
                     <th style="width: 250px;">Delete</th>
                 </tr>
@@ -52,7 +52,7 @@
                 <tr>
                     <td>{{ explode('|', $cards['CardNo'])[$i] }}</td>
                     <td>{{ explode('|', $cards['Expire'])[$i] }}</td>
-                    <td>{{ explode('|', $cards['Brand'])[$i] }}</td>
+                    {{-- <td>{{ explode('|', $cards['Brand'])[$i] }}</td> --}}
                     <td>{{ explode('|', $cards['DeleteFlag'])[$i] ? 'Inactive' : 'Active' }}</td>
                     <td>
                         <form action="{{ route('payment.gmo.card.destroy') }}" method="POST">

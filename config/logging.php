@@ -131,7 +131,15 @@ return [
 
         'mail' => [
             'driver' => 'daily',
-            'path' => storage_path('logs/mails/log.log'),
+            'path' => storage_path('logs/mails/mail.log'),
+            'level' => 'info',
+            'days' => 30,
+            'permission' => 0777,
+        ],
+
+        'import' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/imports/import_csv.log'),
             'level' => 'info',
             'days' => 30,
             'permission' => 0777,

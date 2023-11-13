@@ -2,9 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\ImportUser\ProcessFile;
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
@@ -22,10 +26,14 @@ class FileStreamController extends Controller
     {
         return response()->streamDownload(function () {
             $file = fopen('php://output', 'w');
+            $bom = chr(0xEF) . chr(0xBB) . chr(0xBF);
+            // fputs($file, $bom);
             fputcsv($file, ['Name', 'Email']);
-            for ($i = 1; $i <= 1000000; $i++) {
-                fputcsv($file, ["Trung$i", "nguyenvantrung$i@gmail.com"]);
-            }
+            User::chunk(1000, function ($users) use ($file) {
+                $users->each(function ($user) use ($file) {
+                    fputcsv($file, [$user->name, $user->email]);
+                });
+            });
             fclose($file);
         }, 'export.csv', [
             'Content-Type' => 'text/csv'
@@ -54,5 +62,33 @@ class FileStreamController extends Controller
     public function copy(): RedirectResponse
     {
         return back();
+    }
+
+    /**
+     *  Import file data large from local save to database.
+     */
+    public function importCsv(Request $request): RedirectResponse
+    {
+        $validator = Validator::make($request->all(), [
+            'file' => 'required|file|mimes:csv|max:20000',
+        ]);
+
+        if ($validator->fails()) {
+            return back()->withErrors($validator);
+        }
+
+        $file = $request->file('file');
+        $name = $file->hashName(); // Generate a unique, random name...
+        $path = Storage::putFileAs('imports', $file, $name);
+
+        $batch = Bus::batch([new ProcessFile($path)])
+            ->name('Import Users')
+            ->onQueue('import-user')
+            ->allowFailures()
+            ->dispatch();
+
+        return redirect()->back()->with([
+            'batchId' => $batch->id
+        ])->withMessage('Imported successfully!');
     }
 }

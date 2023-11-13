@@ -8,6 +8,7 @@ use App\Http\Controllers\GMOPayment\CardController;
 use App\Http\Controllers\GMOPayment\OrderController;
 use App\Http\Controllers\PaymentController;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Bus;
 
 /*
 |--------------------------------------------------------------------------
@@ -78,6 +79,11 @@ Route::group(['prefix' => 'file-stream', 'middleware' => 'auth'], function () {
     Route::get('/export', [FileStreamController::class, 'export'])->name('file_stream.export');
     Route::get('/download', [FileStreamController::class, 'download'])->name('file_stream.download');
     Route::get('/copy', [FileStreamController::class, 'copy'])->name('file_stream.copy');
+    Route::post('/import-csv', [FileStreamController::class, 'importCsv'])->name('file_stream.import_csv');
+
+    Route::get('/batch/{batchId}', function (string $batchId) {
+        return Bus::findBatch($batchId);
+    })->name('batches.info');
 });
 
 Auth::routes();

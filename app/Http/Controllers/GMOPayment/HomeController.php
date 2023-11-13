@@ -25,7 +25,7 @@ class HomeController extends Controller
         ->whereDate('created_at', '>=', $dateTo)
         ->whereDate('created_at', '<=', $dateFrom)
         ->get();
-        
+
         return view('payment.gmo.credit-cards.index', compact('orders', 'dateTo', 'dateFrom'));
     }
 
@@ -40,7 +40,7 @@ class HomeController extends Controller
         ->whereDate('created_at', '>=', $dateTo)
         ->whereDate('created_at', '<=', $dateFrom)
         ->get();
-        
+
         return view('payment.gmo.credit-cards.index', compact('orders'));
     }
 

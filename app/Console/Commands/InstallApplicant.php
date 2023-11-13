@@ -28,15 +28,18 @@ class InstallApplicant extends Command
     public function handle()
     {
         $this->info('Start ------> ');
+
         $this->call('migrate:fresh', ['--seed' => true]);
         $this->info('Migrated and seeded all data.');
 
         $this->call('passport:install', ['--force' => true]);
         $this->info('Installed Laravel Passport.');
 
-        $this->call('scrape:tgdd', ['--auth' => true]);
+        $this->call('scrape:tgdd', ['--remind' => true]);
         $this->info('Crawl data for products.');
 
         $this->info('Completed!');
+
+        return true;
     }
 }

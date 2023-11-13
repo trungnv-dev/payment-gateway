@@ -27,9 +27,9 @@ class ScrapeCommand extends Command
      */
     public function handle()
     {
-        if (!$this->option('auth')) {
+        if (!$this->option('remind')) {
             $auth = $this->call('authentication');
-            if (!$auth) return;
+            if (!$auth) return false;
         }
         $this->info(now() . ":: Start Crawler Data TGDD");
         $bot = new \App\Scraper\TGDD();
@@ -38,5 +38,7 @@ class ScrapeCommand extends Command
         $this->alert("Crawler Data TGDD Complete!");
         $this->alert("Time complete: $timeEnd");
         $this->info("$timeEnd:: End Crawler Data TGDD");
+
+        return true;
     }
 }

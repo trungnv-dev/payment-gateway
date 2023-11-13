@@ -3,6 +3,8 @@
 @section('content')
 <div class="container">
     <div class="row justify-content-center">
+        @include('payment.gmo.error-messages')
+
         <div class="col-md-12 mt-2 text-center">
             <a href="#" class="btn col-md-6 btn-warning">LINE PAY</a>
         </div>
